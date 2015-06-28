@@ -8,44 +8,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import javax.imageio.ImageIO;
-
 import org.apache.commons.math3.complex.Complex;
 
 public class RunMe {
 
-	public static int z_check(Complex c) {
-		
-		Complex z0 = new Complex(0.0, 0.0);
-
-		Complex z_prev = z0;
-		Complex z_i = null;
-		int steps = 0;
-		Double d = null;
-		
-		for(int i = 0; i < 640; i++) {
-			
-			z_i = z_prev.multiply(z_prev).add(c);
-			z_prev = z_i;
-			
-			d = new Double(z_prev.getReal());
-			
-			if (d.isInfinite() || d.isNaN()) {
-				
-				steps = i;
-				break;
-				
-			}
-			
-		}
-		
-		// System.out.println("s: " + steps + ", " + z_i.getReal() + ", " + z_i.getImaginary());
-		// return (steps == 0);
-
-		return steps;
-		
-	}
+	
 	
 	public static void main(String[] args) {
 
@@ -58,10 +26,29 @@ public class RunMe {
 		Graphics2D g2d = bi.createGraphics();
 		g2d.setColor(Color.RED);
 		g2d.fillRect(0, 0, width, height);
-		
-		double ty = 1.0/(height * precision);
 
 		PrintWriter out = new PrintWriter(System.out);
+		
+		Color[][] imageAsColorArray = new Color[width][height];
+		
+		MThread test = new MThread(imageAsColorArray, 0, width*height, width, height, precision, range);
+		test.run();
+		
+		for (int row=0; row<height; row++) {
+			for (int col=0; col<width; col++) {
+				int color;
+				if (imageAsColorArray[col][row] == Color.RED) {
+					color = 0xff0000;
+				} else {
+					color = 0xffffff;
+				}
+				
+				bi.setRGB(col, row, color);
+			}
+		}
+		
+		/*double ty = 1.0/(height * precision);
+
 		
 		for (int i = 0; i < (int) (height * precision); i++) {
 			
@@ -131,14 +118,14 @@ public class RunMe {
 				} else {
 					bi.setRGB(px_scr, py_scr, 0xeeee00);
 				}
-*/
+
 				tx += 1.0/(width * precision);
 				
 			}
 			
 			ty += 1.0/(height * precision);
 			
-		}
+		}*/
 
 		bi.setRGB(width/2, height/2, 0xffffff);
 		
